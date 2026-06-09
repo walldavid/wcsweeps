@@ -77,7 +77,7 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--gold);
-      margin-bottom: 14px;
+      margin-bottom: 14px; /* overridden inside .step2-header */
     }
 
     /* Count row */
@@ -152,6 +152,37 @@
       border: none;
       border-top: 1px solid var(--border);
       margin: 24px 0;
+    }
+
+    /* Step 2 header row */
+    .step2-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .step2-header .step-label { margin-bottom: 0; }
+
+    .import-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: border-color .15s, color .15s;
+    }
+
+    .import-btn:hover {
+      border-color: var(--green-light);
+      color: var(--green-light);
     }
 
     /* Name grid */
@@ -349,6 +380,10 @@
     .redraw-row {
       text-align: center;
       margin-bottom: 36px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .redraw-btn {
@@ -367,6 +402,25 @@
 
     .redraw-btn:hover {
       background: var(--gold);
+      color: var(--bg);
+    }
+
+    .export-btn {
+      padding: 13px 36px;
+      background: transparent;
+      color: var(--green-light);
+      border: 2px solid var(--green-light);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      transition: background .15s, color .15s;
+    }
+
+    .export-btn:hover {
+      background: var(--green-light);
       color: var(--bg);
     }
 
@@ -464,7 +518,13 @@
 
       <hr class="section-divider" />
 
-      <div class="step-label">Step 2 — Enter entrant names</div>
+      <div class="step2-header">
+        <div class="step-label">Step 2 — Enter entrant names</div>
+        <label class="import-btn" title="Import names from a CSV or Excel file">
+          ⬆ Import from file
+          <input type="file" id="import-file" accept=".csv,.txt,.xls,.xlsx" style="display:none" />
+        </label>
+      </div>
       <div class="name-grid" id="name-grid"></div>
 
       <button class="draw-btn" id="draw-btn">🎲 &nbsp;Draw Teams!</button>
@@ -482,6 +542,7 @@
 
     <div class="redraw-row">
       <button class="redraw-btn" id="redraw-btn">↩ &nbsp;Start a New Draw</button>
+      <button class="export-btn" id="export-btn">⬇ &nbsp;Export to Excel</button>
     </div>
 
     <div id="dropped-container"></div>
@@ -564,7 +625,11 @@ const resultsSection  = document.getElementById('results-section');
 const resultsGrid     = document.getElementById('results-grid');
 const resultsSub      = document.getElementById('results-sub');
 const redrawBtn       = document.getElementById('redraw-btn');
+const exportBtn       = document.getElementById('export-btn');
+const importFile      = document.getElementById('import-file');
 const droppedContainer= document.getElementById('dropped-container');
+
+let lastResults = null;
 
 // =============================================================================
 // Count control
@@ -637,14 +702,52 @@ drawBtn.addEventListener('click', () => {
                           .map((inp, i) => inp.value.trim() || `Player ${i + 1}`);
   const activeTeams = TEAMS.slice(0, n * 2);
   const droppedTeams= TEAMS.slice(n * 2);
-  const shuffled    = shuffle(activeTeams);
+  const topHalf     = shuffle(activeTeams.slice(0, n));
+  const bottomHalf  = shuffle(activeTeams.slice(n));
 
   const results = names.map((name, i) => ({
     name,
-    teams: [shuffled[i * 2], shuffled[i * 2 + 1]],
+    teams: [topHalf[i], bottomHalf[i]],
   }));
 
+  lastResults = results;
   renderResults(results, droppedTeams, n);
+});
+
+exportBtn.addEventListener('click', () => {
+  if (!lastResults) return;
+
+  function escXml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function cell(val, type) {
+    return `<Cell><Data ss:Type="${type}">${escXml(String(val))}</Data></Cell>`;
+  }
+
+  const header = ['Entrant', 'Top-Half Team', 'Rank', 'Bottom-Half Team', 'Rank'];
+  const dataRows = lastResults.map(r => [
+    r.name,
+    `${r.teams[0].flag} ${r.teams[0].name}`,
+    r.teams[0].rank,
+    `${r.teams[1].flag} ${r.teams[1].name}`,
+    r.teams[1].rank,
+  ]);
+
+  const xmlRows = [
+    `<Row>${header.map(h => cell(h, 'String')).join('')}</Row>`,
+    ...dataRows.map(row => `<Row>${row.map((v, i) => cell(v, i === 2 || i === 4 ? 'Number' : 'String')).join('')}</Row>`),
+  ].join('\n      ');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n  <Worksheet ss:Name="Draw Results">\n    <Table>\n      ${xmlRows}\n    </Table>\n  </Worksheet>\n</Workbook>`;
+
+  const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'wc2026-sweepstakes.xls';
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
 redrawBtn.addEventListener('click', () => {
@@ -719,6 +822,50 @@ function renderResults(results, droppedTeams, n) {
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// =============================================================================
+// Import names from file
+// =============================================================================
+importFile.addEventListener('change', () => {
+  const file = importFile.files[0];
+  if (!file) return;
+  importFile.value = ''; // reset so same file can be re-imported
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+
+    // Try Excel XML format first (our own export, or any xl/xml saved file)
+    if (text.includes('<Data ss:Type=')) {
+      const matches = [...text.matchAll(/<Row>.*?<\/Row>/gs)];
+      const names = matches
+        .map(m => {
+          const cells = [...m[0].matchAll(/<Data[^>]*>([^<]*)<\/Data>/g)];
+          return cells[0] ? cells[0][1].trim() : '';
+        })
+        .filter(n => n && !/^(entrant|name|player)$/i.test(n));
+      applyImportedNames(names);
+      return;
+    }
+
+    // CSV / TSV / plain text — one name per line, take first cell
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const sep   = lines[0] && lines[0].includes('\t') ? '\t' : ',';
+    const names = lines
+      .map(line => line.split(sep)[0].replace(/^["']|["']$/g, '').trim())
+      .filter(n => n && !/^(entrant|name|player|#)$/i.test(n));
+    applyImportedNames(names);
+  };
+  reader.readAsText(file);
+});
+
+function applyImportedNames(names) {
+  if (!names.length) { alert('No names found in the file.'); return; }
+  const n = Math.min(24, names.length);
+  setCount(n);
+  const inputs = nameGrid.querySelectorAll('input');
+  names.slice(0, n).forEach((name, i) => { inputs[i].value = name; });
 }
 
 // =============================================================================
