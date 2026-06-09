@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Shitetalk World Cup 2026 Sweepstakes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:        #1a6b2f;
+      --green-mid:    #2d8a45;
+      --green-light:  #3aac58;
+      --gold:         #c9a227;
+      --gold-light:   #f0c842;
+      --bg:           #0a1a0c;
+      --card:         #112214;
+      --card-2:       #172e1a;
+      --border:       #2a4a2e;
+      --text:         #e8f0e9;
+      --muted:        #7a9e7d;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(26, 107, 47, 0.18) 0%, transparent 70%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px 72px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header-icons {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+    }
+
+    h1 {
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      max-width: 640px;
+      margin: 0 auto 8px;
+      text-shadow: 0 2px 16px rgba(201, 162, 39, 0.35);
+    }
+
+    .header-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Setup card ── */
+    .setup-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 660px;
+      margin: 0 auto 32px;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    /* Count row */
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .count-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+      line-height: 1;
+    }
+
+    .count-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    #entrant-count {
+      width: 72px;
+      height: 42px;
+      text-align: center;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--gold);
+      font-size: 1.4rem;
+      font-weight: 800;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    #entrant-count::-webkit-outer-spin-button,
+    #entrant-count::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .teams-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .teams-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green-light);
+      display: inline-block;
+    }
+
+    .teams-pill .dot-grey {
+      background: var(--border);
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* Name grid */
+    .name-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .name-field {
+      position: relative;
+    }
+
+    .num-badge {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .name-field input {
+      width: 100%;
+      padding: 10px 10px 10px 40px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .name-field input:focus {
+      border-color: var(--gold);
+    }
+
+    /* Draw button */
+    .draw-btn {
+      display: block;
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, var(--gold), #e8b820);
+      color: #0a1a0c;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: transform .1s, opacity .15s, box-shadow .15s;
+      box-shadow: 0 4px 20px rgba(201, 162, 39, 0.3);
+    }
+
+    .draw-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(201, 162, 39, 0.45);
+    }
+
+    .draw-btn:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .draw-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Results ── */
+    #results-section {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .results-header h2 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 4px;
+    }
+
+    .results-header .results-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.97);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .result-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .result-card:hover {
+      border-color: var(--green-mid);
+    }
+
+    .result-player {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+    }
+
+    .team-row + .team-row {
+      border-top: 1px solid var(--border);
+    }
+
+    .team-rank {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #d4ead6;
+      font-size: 0.68rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .team-flag {
+      font-size: 1.55rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .team-name {
+      font-size: 0.96rem;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── Redraw row ── */
+    .redraw-row {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .redraw-btn {
+      padding: 13px 36px;
+      background: transparent;
+      color: var(--gold);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      transition: background .15s, color .15s;
+    }
+
+    .redraw-btn:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    /* ── Dropped teams ── */
+    .dropped-wrap {
+      max-width: 580px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .dropped-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .dropped-toggle:hover { background: rgba(255,255,255,0.025); }
+
+    .dropped-toggle-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .dropped-arrow {
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: transform .2s;
+    }
+
+    .dropped-arrow.open { transform: rotate(180deg); }
+
+    .dropped-list {
+      display: none;
+      padding: 0 20px 12px;
+    }
+
+    .dropped-list.open { display: block; }
+
+    .dropped-team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .dropped-flag { font-size: 1.15rem; line-height: 1; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      margin-top: 64px;
+      font-size: 0.78rem;
+      color: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icons">⚽ 🏆 ⚽</div>
+  <h1>The Shitetalk World Cup 2026 Sweepstakes</h1>
+  <div class="header-sub">FIFA World Cup · USA · Canada · Mexico</div>
+</header>
+
+<main>
+  <!-- ─────────────── SETUP ─────────────── -->
+  <section id="setup-section">
+    <div class="setup-card">
+
+      <div class="step-label">Step 1 — How many entrants?</div>
+      <div class="count-row">
+        <button class="count-btn" id="count-minus" aria-label="Decrease">−</button>
+        <input type="number" id="entrant-count" min="1" max="24" value="10" />
+        <button class="count-btn" id="count-plus" aria-label="Increase">+</button>
+        <span class="teams-pill">
+          <span class="dot" id="dot-active"></span>
+          <span id="teams-used-label">20 teams in draw</span>
+          &nbsp;·&nbsp;
+          <span class="dot dot-grey"></span>
+          <span id="teams-dropped-label">28 dropped</span>
+        </span>
+      </div>
+
+      <hr class="section-divider" />
+
+      <div class="step-label">Step 2 — Enter entrant names</div>
+      <div class="name-grid" id="name-grid"></div>
+
+      <button class="draw-btn" id="draw-btn">🎲 &nbsp;Draw Teams!</button>
+    </div>
+  </section>
+
+  <!-- ─────────────── RESULTS ─────────────── -->
+  <section id="results-section" style="display:none">
+    <div class="results-header">
+      <h2>🎉 Draw Results</h2>
+      <div class="results-sub" id="results-sub"></div>
+    </div>
+
+    <div class="results-grid" id="results-grid"></div>
+
+    <div class="redraw-row">
+      <button class="redraw-btn" id="redraw-btn">↩ &nbsp;Start a New Draw</button>
+    </div>
+
+    <div id="dropped-container"></div>
+  </section>
+</main>
+
+<footer>
+  48 teams · 2 per entrant · lowest-ranked teams dropped when &lt; 24 entrants
+</footer>
+
+<script>
+// =============================================================================
+// TEAMS — ordered by FIFA World Rankings (rank 1 = best)
+// Update this list to correct any teams or adjust ordering
+// =============================================================================
+const TEAMS = [
+  { name: 'Argentina',      flag: '🇦🇷', rank: 1  },
+  { name: 'France',         flag: '🇫🇷', rank: 2  },
+  { name: 'Spain',          flag: '🇪🇸', rank: 3  },
+  { name: 'England',        flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', rank: 4  },
+  { name: 'Brazil',         flag: '🇧🇷', rank: 5  },
+  { name: 'Portugal',       flag: '🇵🇹', rank: 6  },
+  { name: 'Netherlands',    flag: '🇳🇱', rank: 7  },
+  { name: 'Belgium',        flag: '🇧🇪', rank: 8  },
+  { name: 'Germany',        flag: '🇩🇪', rank: 9  },
+  { name: 'Colombia',       flag: '🇨🇴', rank: 10 },
+  { name: 'Italy',          flag: '🇮🇹', rank: 11 },
+  { name: 'Uruguay',        flag: '🇺🇾', rank: 12 },
+  { name: 'Morocco',        flag: '🇲🇦', rank: 13 },
+  { name: 'USA',            flag: '🇺🇸', rank: 14 },
+  { name: 'Croatia',        flag: '🇭🇷', rank: 15 },
+  { name: 'Mexico',         flag: '🇲🇽', rank: 16 },
+  { name: 'Japan',          flag: '🇯🇵', rank: 17 },
+  { name: 'Senegal',        flag: '🇸🇳', rank: 18 },
+  { name: 'Denmark',        flag: '🇩🇰', rank: 19 },
+  { name: 'Switzerland',    flag: '🇨🇭', rank: 20 },
+  { name: 'South Korea',    flag: '🇰🇷', rank: 21 },
+  { name: 'Iran',           flag: '🇮🇷', rank: 22 },
+  { name: 'Ecuador',        flag: '🇪🇨', rank: 23 },
+  { name: 'Australia',      flag: '🇦🇺', rank: 24 },
+  { name: 'Canada',         flag: '🇨🇦', rank: 25 },
+  { name: 'Serbia',         flag: '🇷🇸', rank: 26 },
+  { name: 'Poland',         flag: '🇵🇱', rank: 27 },
+  { name: 'Austria',        flag: '🇦🇹', rank: 28 },
+  { name: 'Ukraine',        flag: '🇺🇦', rank: 29 },
+  { name: 'Nigeria',        flag: '🇳🇬', rank: 30 },
+  { name: 'South Africa',   flag: '🇿🇦', rank: 31 },
+  { name: 'Algeria',        flag: '🇩🇿', rank: 32 },
+  { name: 'Egypt',          flag: '🇪🇬', rank: 33 },
+  { name: 'Hungary',        flag: '🇭🇺', rank: 34 },
+  { name: 'Turkey',         flag: '🇹🇷', rank: 35 },
+  { name: 'Cameroon',       flag: '🇨🇲', rank: 36 },
+  { name: 'Saudi Arabia',   flag: '🇸🇦', rank: 37 },
+  { name: 'Tunisia',        flag: '🇹🇳', rank: 38 },
+  { name: 'Panama',         flag: '🇵🇦', rank: 39 },
+  { name: 'Costa Rica',     flag: '🇨🇷', rank: 40 },
+  { name: 'Ghana',          flag: '🇬🇭', rank: 41 },
+  { name: 'Venezuela',      flag: '🇻🇪', rank: 42 },
+  { name: 'Czech Republic', flag: '🇨🇿', rank: 43 },
+  { name: 'Jordan',         flag: '🇯🇴', rank: 44 },
+  { name: 'Iraq',           flag: '🇮🇶', rank: 45 },
+  { name: 'Uzbekistan',     flag: '🇺🇿', rank: 46 },
+  { name: 'New Zealand',    flag: '🇳🇿', rank: 47 },
+  { name: 'Honduras',       flag: '🇭🇳', rank: 48 },
+];
+
+// =============================================================================
+// DOM refs
+// =============================================================================
+const countInput      = document.getElementById('entrant-count');
+const countMinus      = document.getElementById('count-minus');
+const countPlus       = document.getElementById('count-plus');
+const nameGrid        = document.getElementById('name-grid');
+const teamsUsedLabel  = document.getElementById('teams-used-label');
+const teamsDropLabel  = document.getElementById('teams-dropped-label');
+const dotActive       = document.getElementById('dot-active');
+const drawBtn         = document.getElementById('draw-btn');
+const setupSection    = document.getElementById('setup-section');
+const resultsSection  = document.getElementById('results-section');
+const resultsGrid     = document.getElementById('results-grid');
+const resultsSub      = document.getElementById('results-sub');
+const redrawBtn       = document.getElementById('redraw-btn');
+const droppedContainer= document.getElementById('dropped-container');
+
+// =============================================================================
+// Count control
+// =============================================================================
+function getCount() {
+  return Math.min(24, Math.max(1, parseInt(countInput.value, 10) || 1));
+}
+
+function setCount(n) {
+  countInput.value = n;
+  renderNameFields(n);
+  updateTeamsLabel(n);
+}
+
+function updateTeamsLabel(n) {
+  const used    = n * 2;
+  const dropped = 48 - used;
+  teamsUsedLabel.textContent  = `${used} team${used !== 1 ? 's' : ''} in draw`;
+  teamsDropLabel.textContent  = dropped > 0 ? `${dropped} dropped` : 'none dropped';
+  dotActive.style.background  = dropped > 0 ? 'var(--green-light)' : 'var(--gold)';
+}
+
+function renderNameFields(n) {
+  // Preserve existing values
+  const existing = Array.from(nameGrid.querySelectorAll('input')).map(i => i.value);
+  nameGrid.innerHTML = '';
+  for (let i = 1; i <= n; i++) {
+    const div = document.createElement('div');
+    div.className = 'name-field';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = `Player ${i}`;
+    inp.maxLength = 30;
+    inp.value = existing[i - 1] || '';
+    const badge = document.createElement('span');
+    badge.className = 'num-badge';
+    badge.textContent = i;
+    div.appendChild(badge);
+    div.appendChild(inp);
+    nameGrid.appendChild(div);
+  }
+}
+
+countMinus.addEventListener('click', () => setCount(Math.max(1,  getCount() - 1)));
+countPlus .addEventListener('click', () => setCount(Math.min(24, getCount() + 1)));
+countInput.addEventListener('input', () => {
+  updateTeamsLabel(getCount());
+  renderNameFields(getCount());
+});
+countInput.addEventListener('change', () => setCount(getCount()));
+
+// =============================================================================
+// Fisher-Yates shuffle
+// =============================================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// =============================================================================
+// Draw
+// =============================================================================
+drawBtn.addEventListener('click', () => {
+  const n           = getCount();
+  const names       = Array.from(nameGrid.querySelectorAll('input'))
+                          .map((inp, i) => inp.value.trim() || `Player ${i + 1}`);
+  const activeTeams = TEAMS.slice(0, n * 2);
+  const droppedTeams= TEAMS.slice(n * 2);
+  const shuffled    = shuffle(activeTeams);
+
+  const results = names.map((name, i) => ({
+    name,
+    teams: [shuffled[i * 2], shuffled[i * 2 + 1]],
+  }));
+
+  renderResults(results, droppedTeams, n);
+});
+
+redrawBtn.addEventListener('click', () => {
+  resultsSection.style.display = 'none';
+  setupSection.style.display   = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// =============================================================================
+// Render results
+// =============================================================================
+function esc(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderResults(results, droppedTeams, n) {
+  setupSection.style.display   = 'none';
+  resultsSection.style.display = 'block';
+
+  resultsSub.textContent =
+    n === 24
+      ? 'All 48 teams are in play — good luck!'
+      : `${n * 2} of 48 teams in play · ${48 - n * 2} lowest-ranked teams excluded`;
+
+  resultsGrid.innerHTML = results.map((r, i) => `
+    <div class="result-card" data-idx="${i}">
+      <div class="result-player">Entrant ${i + 1}</div>
+      <div class="result-name" title="${esc(r.name)}">${esc(r.name)}</div>
+      ${r.teams.map(t => `
+        <div class="team-row">
+          <div class="team-rank">#${t.rank}</div>
+          <div class="team-flag">${t.flag}</div>
+          <div class="team-name">${esc(t.name)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  // Staggered reveal
+  resultsGrid.querySelectorAll('.result-card').forEach((card, i) => {
+    setTimeout(() => card.classList.add('visible'), 60 + i * 70);
+  });
+
+  // Dropped teams
+  if (droppedTeams.length > 0) {
+    droppedContainer.innerHTML = `
+      <div class="dropped-wrap">
+        <div class="dropped-toggle" id="dropped-toggle">
+          <span class="dropped-toggle-label">Teams not in draw (${droppedTeams.length})</span>
+          <span class="dropped-arrow" id="dropped-arrow">▼</span>
+        </div>
+        <div class="dropped-list" id="dropped-list">
+          ${droppedTeams.map(t => `
+            <div class="dropped-team">
+              <span class="dropped-flag">${t.flag}</span>
+              <span>#${t.rank} &nbsp;${esc(t.name)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('dropped-toggle').addEventListener('click', () => {
+      document.getElementById('dropped-list').classList.toggle('open');
+      document.getElementById('dropped-arrow').classList.toggle('open');
+    });
+  } else {
+    droppedContainer.innerHTML = '';
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// =============================================================================
+// Init
+// =============================================================================
+setCount(10);
+</script>
+</body>
+</html>
