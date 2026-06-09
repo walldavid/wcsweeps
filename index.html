@@ -8,76 +8,189 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green:        #1a6b2f;
-      --green-mid:    #2d8a45;
-      --green-light:  #3aac58;
-      --gold:         #c9a227;
-      --gold-light:   #f0c842;
-      --bg:           #0a1a0c;
-      --card:         #112214;
-      --card-2:       #172e1a;
-      --border:       #2a4a2e;
-      --text:         #e8f0e9;
-      --muted:        #7a9e7d;
+      --green:         #1a6b2f;
+      --green-mid:     #2d8a45;
+      --green-light:   #3aac58;
+      --green-bright:  #50d47a;
+      --gold:          #c9a227;
+      --gold-light:    #f0c842;
+      --gold-bright:   #ffe066;
+      --bg:            #030a05;
+      --card:          #091409;
+      --card-2:        #0d1c0e;
+      --border:        #172d1a;
+      --border-hi:     #24402a;
+      --text:          #e8f0e9;
+      --text-dim:      #adc2af;
+      --muted:         #6a8e6d;
     }
 
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
+      background-color: var(--bg);
       background-image:
-        radial-gradient(ellipse at 50% 0%, rgba(26, 107, 47, 0.18) 0%, transparent 70%);
+        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(44, 138, 69, 0.28) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 35% at 8%  0%,  rgba(201, 162, 39, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 35% at 92% 0%,  rgba(201, 162, 39, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(26, 107, 47, 0.1) 0%, transparent 70%);
       color: var(--text);
       min-height: 100vh;
-      padding: 32px 16px 72px;
+      padding-bottom: 80px;
     }
 
-    /* ── Header ── */
+    /* Subtle dot-grid texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main, footer {
+      position: relative;
+      z-index: 1;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    /* ── Header / Hero ── */
     header {
+      position: relative;
+      z-index: 1;
       text-align: center;
-      margin-bottom: 40px;
+      padding: 60px 20px 54px;
+      overflow: hidden;
     }
 
-    .header-icons {
-      font-size: 2.4rem;
-      margin-bottom: 12px;
-      letter-spacing: 0.1em;
+    /* decorative pitch-arc behind the trophy */
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      border: 1px solid rgba(58, 172, 88, 0.1);
+      pointer-events: none;
+    }
+
+    /* gold gradient rule below header */
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .wc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(201, 162, 39, 0.35);
+      background: rgba(201, 162, 39, 0.07);
+      color: var(--gold-light);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .header-trophy {
+      font-size: 4rem;
+      line-height: 1;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 0 32px rgba(201, 162, 39, 0.55))
+              drop-shadow(0 0 8px rgba(201, 162, 39, 0.4));
+      animation: trophy-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes trophy-pulse {
+      0%, 100% { filter: drop-shadow(0 0 28px rgba(201, 162, 39, 0.5)) drop-shadow(0 0 8px rgba(201, 162, 39, 0.35)); }
+      50%       { filter: drop-shadow(0 0 44px rgba(201, 162, 39, 0.75)) drop-shadow(0 0 12px rgba(201, 162, 39, 0.55)); }
     }
 
     h1 {
-      font-size: clamp(1.3rem, 4vw, 2rem);
+      font-size: clamp(1.7rem, 5.5vw, 2.8rem);
       font-weight: 900;
-      color: var(--gold);
+      color: #fff;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      line-height: 1.2;
+      line-height: 1.1;
       max-width: 640px;
-      margin: 0 auto 8px;
-      text-shadow: 0 2px 16px rgba(201, 162, 39, 0.35);
+      margin: 0 auto;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.6);
     }
 
-    .header-sub {
-      font-size: 0.9rem;
-      color: var(--muted);
-      letter-spacing: 0.06em;
+    h1 .title-highlight {
+      color: var(--gold-light);
+      display: block;
+      font-size: 0.65em;
+      letter-spacing: 0.2em;
+      margin-bottom: 2px;
+      text-shadow: 0 0 30px rgba(240, 200, 66, 0.4);
+    }
+
+    .host-nations {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .host-nation {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-hi);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .host-sep {
+      color: var(--border-hi);
+      font-size: 1rem;
+      line-height: 1;
     }
 
     /* ── Setup card ── */
     .setup-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: linear-gradient(160deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.012) 100%);
+      border: 1px solid var(--border-hi);
       border-radius: 20px;
       padding: 32px 28px;
       max-width: 660px;
       margin: 0 auto 32px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.07);
     }
 
     .step-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      margin-bottom: 14px; /* overridden inside .step2-header */
+      letter-spacing: 0.16em;
+      color: var(--green-light);
+      margin-bottom: 14px;
     }
 
     /* Count row */
@@ -86,35 +199,37 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
+      flex-wrap: wrap;
     }
 
     .count-btn {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
-      border: 1.5px solid var(--border);
-      background: var(--bg);
+      border: 1.5px solid var(--border-hi);
+      background: rgba(255,255,255,0.04);
       color: var(--text);
       font-size: 1.3rem;
       font-weight: 700;
       cursor: pointer;
-      transition: border-color .15s, color .15s;
+      transition: border-color .15s, color .15s, background .15s;
       line-height: 1;
     }
 
     .count-btn:hover {
       border-color: var(--gold);
       color: var(--gold);
+      background: rgba(201, 162, 39, 0.08);
     }
 
     #entrant-count {
       width: 72px;
-      height: 42px;
+      height: 44px;
       text-align: center;
       border: 2px solid var(--gold);
       border-radius: 12px;
-      background: var(--bg);
-      color: var(--gold);
+      background: rgba(201, 162, 39, 0.08);
+      color: var(--gold-light);
       font-size: 1.4rem;
       font-weight: 800;
       outline: none;
@@ -129,8 +244,8 @@
       gap: 6px;
       padding: 6px 14px;
       border-radius: 20px;
-      background: var(--card-2);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-hi);
       font-size: 0.82rem;
       color: var(--muted);
       font-weight: 600;
@@ -145,7 +260,7 @@
     }
 
     .teams-pill .dot-grey {
-      background: var(--border);
+      background: var(--border-hi);
     }
 
     .section-divider {
@@ -169,9 +284,9 @@
       align-items: center;
       gap: 6px;
       padding: 7px 14px;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid var(--border-hi);
       border-radius: 10px;
-      background: var(--bg);
+      background: rgba(255,255,255,0.03);
       color: var(--muted);
       font-size: 0.8rem;
       font-weight: 700;
@@ -205,7 +320,7 @@
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      background: var(--green);
+      background: linear-gradient(135deg, var(--green-mid), var(--green));
       color: #fff;
       font-size: 0.68rem;
       font-weight: 800;
@@ -218,41 +333,42 @@
     .name-field input {
       width: 100%;
       padding: 10px 10px 10px 40px;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid var(--border-hi);
       border-radius: 10px;
-      background: var(--bg);
+      background: rgba(255,255,255,0.03);
       color: var(--text);
-      font-size: 1rem; /* 16px prevents iOS auto-zoom on focus */
+      font-size: 1rem;
       outline: none;
-      transition: border-color .15s;
+      transition: border-color .15s, background .15s;
     }
 
     .name-field input:focus {
       border-color: var(--gold);
+      background: rgba(201, 162, 39, 0.05);
     }
 
     /* Draw button */
     .draw-btn {
       display: block;
       width: 100%;
-      padding: 17px;
-      background: linear-gradient(135deg, var(--gold), #e8b820);
-      color: #0a1a0c;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-light) 40%, var(--gold) 100%);
+      color: #030a03;
       border: none;
       border-radius: 14px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 900;
       cursor: pointer;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      transition: transform .1s, opacity .15s, box-shadow .15s;
-      box-shadow: 0 4px 20px rgba(201, 162, 39, 0.3);
+      transition: transform .12s, opacity .15s, box-shadow .15s;
+      box-shadow: 0 4px 28px rgba(201, 162, 39, 0.4), inset 0 1px 0 rgba(255,255,255,0.25);
     }
 
     .draw-btn:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 24px rgba(201, 162, 39, 0.45);
+      opacity: 0.93;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(201, 162, 39, 0.55), inset 0 1px 0 rgba(255,255,255,0.25);
     }
 
     .draw-btn:active {
@@ -274,15 +390,17 @@
     .results-header {
       text-align: center;
       margin-bottom: 32px;
+      padding-top: 16px;
     }
 
     .results-header h2 {
-      font-size: 1.5rem;
+      font-size: clamp(1.4rem, 4vw, 1.9rem);
       font-weight: 900;
-      color: var(--gold);
+      color: var(--gold-light);
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 4px;
+      letter-spacing: 0.09em;
+      margin-bottom: 6px;
+      text-shadow: 0 0 32px rgba(240, 200, 66, 0.35);
     }
 
     .results-header .results-sub {
@@ -293,18 +411,19 @@
     .results-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 16px;
+      gap: 14px;
       margin-bottom: 36px;
     }
 
     .result-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: linear-gradient(160deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid var(--border-hi);
       border-radius: 18px;
-      padding: 20px;
+      overflow: hidden;
       opacity: 0;
       transform: translateY(20px) scale(0.97);
-      transition: opacity 0.35s ease, transform 0.35s ease;
+      transition: opacity 0.35s ease, transform 0.35s ease, border-color .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35);
     }
 
     .result-card.visible {
@@ -313,20 +432,30 @@
     }
 
     .result-card:hover {
-      border-color: var(--green-mid);
+      border-color: rgba(201, 162, 39, 0.45);
+      box-shadow: 0 8px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(201, 162, 39, 0.12);
+    }
+
+    .result-card-accent {
+      height: 3px;
+      background: linear-gradient(90deg, var(--green-light), var(--gold-light));
+    }
+
+    .result-card-body {
+      padding: 16px 18px 20px;
     }
 
     .result-player {
-      font-size: 0.7rem;
+      font-size: 0.67rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.18em;
       color: var(--muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .result-name {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--gold-light);
       margin-bottom: 14px;
@@ -352,9 +481,9 @@
       width: 30px;
       height: 30px;
       border-radius: 8px;
-      background: var(--green);
+      background: linear-gradient(135deg, var(--green-mid), var(--green));
       color: #d4ead6;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -376,7 +505,7 @@
       white-space: nowrap;
     }
 
-    /* ── Redraw row ── */
+    /* ── Redraw / export row ── */
     .redraw-row {
       text-align: center;
       margin-bottom: 36px;
@@ -390,46 +519,48 @@
       padding: 13px 36px;
       background: transparent;
       color: var(--gold);
-      border: 2px solid var(--gold);
+      border: 2px solid rgba(201, 162, 39, 0.45);
       border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      transition: background .15s, color .15s;
+      transition: background .15s, color .15s, border-color .15s;
     }
 
     .redraw-btn:hover {
       background: var(--gold);
       color: var(--bg);
+      border-color: var(--gold);
     }
 
     .export-btn {
       padding: 13px 36px;
       background: transparent;
       color: var(--green-light);
-      border: 2px solid var(--green-light);
+      border: 2px solid rgba(58, 172, 88, 0.45);
       border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      transition: background .15s, color .15s;
+      transition: background .15s, color .15s, border-color .15s;
     }
 
     .export-btn:hover {
       background: var(--green-light);
       color: var(--bg);
+      border-color: var(--green-light);
     }
 
     /* ── Dropped teams ── */
     .dropped-wrap {
       max-width: 580px;
       margin: 0 auto;
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-hi);
       border-radius: 16px;
       overflow: hidden;
     }
@@ -485,23 +616,22 @@
       text-align: center;
       margin-top: 64px;
       font-size: 0.78rem;
-      color: var(--border);
+      color: var(--border-hi);
     }
 
     /* ── Mobile ── */
     @media (max-width: 520px) {
+      header {
+        padding: 44px 16px 44px;
+      }
+
       body {
-        padding: 20px 12px 56px;
+        padding-bottom: 56px;
       }
 
       .setup-card {
         padding: 20px 14px;
         border-radius: 16px;
-      }
-
-      /* Wrap the pill onto its own line below the count controls */
-      .count-row {
-        flex-wrap: wrap;
       }
 
       .teams-pill {
@@ -510,7 +640,6 @@
         margin-top: 2px;
       }
 
-      /* Stack import button below the step label */
       .step2-header {
         flex-direction: column;
         align-items: flex-start;
@@ -523,16 +652,23 @@
         padding: 10px 14px;
       }
 
-      /* Full-width action buttons */
       .redraw-btn,
       .export-btn {
         width: 100%;
         justify-content: center;
       }
 
-      /* Single-column results on small screens */
       .results-grid {
         grid-template-columns: 1fr;
+      }
+
+      .host-nations {
+        gap: 6px;
+      }
+
+      .host-nation {
+        font-size: 0.78rem;
+        padding: 5px 10px;
       }
     }
   </style>
@@ -540,9 +676,19 @@
 <body>
 
 <header>
-  <div class="header-icons">⚽ 🏆 ⚽</div>
-  <h1>The Shitetalk World Cup 2026 Sweepstakes</h1>
-  <div class="header-sub">FIFA World Cup · USA · Canada · Mexico</div>
+  <div class="wc-badge">⚽ FIFA World Cup 2026™</div>
+  <div class="header-trophy">🏆</div>
+  <h1>
+    <span class="title-highlight">The Shitetalk</span>
+    Sweepstakes
+  </h1>
+  <div class="host-nations">
+    <span class="host-nation">🇺🇸 United States</span>
+    <span class="host-sep">·</span>
+    <span class="host-nation">🇨🇦 Canada</span>
+    <span class="host-sep">·</span>
+    <span class="host-nation">🇲🇽 Mexico</span>
+  </div>
 </header>
 
 <main>
@@ -598,7 +744,7 @@
 </main>
 
 <footer>
-  48 teams · 2 per entrant · lowest-ranked teams dropped when &lt; 24 entrants
+  48 teams · 2 per entrant · 1 top-half + 1 bottom-half guaranteed · lowest-ranked teams dropped when &lt; 24 entrants
 </footer>
 
 <script>
@@ -826,15 +972,18 @@ function renderResults(results, droppedTeams, n) {
 
   resultsGrid.innerHTML = results.map((r, i) => `
     <div class="result-card" data-idx="${i}">
-      <div class="result-player">Entrant ${i + 1}</div>
-      <div class="result-name" title="${esc(r.name)}">${esc(r.name)}</div>
-      ${r.teams.map(t => `
-        <div class="team-row">
-          <div class="team-rank">#${t.rank}</div>
-          <div class="team-flag">${t.flag}</div>
-          <div class="team-name">${esc(t.name)}</div>
-        </div>
-      `).join('')}
+      <div class="result-card-accent"></div>
+      <div class="result-card-body">
+        <div class="result-player">Entrant ${i + 1}</div>
+        <div class="result-name" title="${esc(r.name)}">${esc(r.name)}</div>
+        ${r.teams.map(t => `
+          <div class="team-row">
+            <div class="team-rank">#${t.rank}</div>
+            <div class="team-flag">${t.flag}</div>
+            <div class="team-name">${esc(t.name)}</div>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `).join('');
 
