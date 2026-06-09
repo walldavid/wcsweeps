@@ -222,7 +222,7 @@
       border-radius: 10px;
       background: var(--bg);
       color: var(--text);
-      font-size: 0.92rem;
+      font-size: 1rem; /* 16px prevents iOS auto-zoom on focus */
       outline: none;
       transition: border-color .15s;
     }
@@ -486,6 +486,54 @@
       margin-top: 64px;
       font-size: 0.78rem;
       color: var(--border);
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 520px) {
+      body {
+        padding: 20px 12px 56px;
+      }
+
+      .setup-card {
+        padding: 20px 14px;
+        border-radius: 16px;
+      }
+
+      /* Wrap the pill onto its own line below the count controls */
+      .count-row {
+        flex-wrap: wrap;
+      }
+
+      .teams-pill {
+        width: 100%;
+        justify-content: center;
+        margin-top: 2px;
+      }
+
+      /* Stack import button below the step label */
+      .step2-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .import-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 14px;
+      }
+
+      /* Full-width action buttons */
+      .redraw-btn,
+      .export-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Single-column results on small screens */
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
