@@ -470,14 +470,20 @@
     }
 
     .team-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       padding: 9px 0;
+      perspective: 400px;
     }
 
     .team-row + .team-row {
       border-top: 1px solid var(--border);
+    }
+
+    .team-pick {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      backface-visibility: hidden;
+      will-change: transform;
     }
 
     .team-rank {
@@ -508,24 +514,15 @@
       white-space: nowrap;
     }
 
-    /* Shuffle / lock-in animation for each pick */
-    .team-row.shuffling {
-      animation: shuffle-flicker 0.16s steps(2, end) infinite;
-    }
-
-    @keyframes shuffle-flicker {
-      0%, 100% { opacity: 1; }
-      50%      { opacity: 0.5; }
-    }
-
+    /* Lock-in flash once a pick settles */
     .team-row.locked {
       animation: lock-in 0.32s ease;
       border-radius: 8px;
     }
 
     @keyframes lock-in {
-      0%   { transform: scale(1.04); background: rgba(240, 200, 66, 0.2); }
-      100% { transform: scale(1); background: transparent; }
+      0%   { background: rgba(240, 200, 66, 0.2); }
+      100% { background: transparent; }
     }
 
     /* ── Redraw / export row ── */
@@ -978,24 +975,43 @@ drawBtn.addEventListener('click', async () => {
   drawBtn.textContent = '🎲  Draw Teams!';
 });
 
+const FLIP_HALF_MS = SHUFFLE_STEP_MS / 2;
+
 async function animateSlot(card, slotIdx, pool, finalTeam) {
   const row = card.querySelector(`.team-row[data-slot="${slotIdx}"]`);
-  row.classList.add('shuffling');
   for (let step = 0; step < SHUFFLE_STEPS; step++) {
-    setTeamRow(row, pool[Math.floor(Math.random() * pool.length)]);
-    await sleep(SHUFFLE_STEP_MS);
+    await flipToTeam(row, pool[Math.floor(Math.random() * pool.length)]);
   }
-  setTeamRow(row, finalTeam);
-  row.classList.remove('shuffling');
+  await flipToTeam(row, finalTeam);
   row.classList.add('locked');
   await sleep(LOCK_PAUSE_MS);
   row.classList.remove('locked');
 }
 
+// Flips the team-pick face away, swaps its content, then flips it back —
+// giving the impression the country is rotating in place as it cycles.
+async function flipToTeam(row, team) {
+  const pick = row.querySelector('.team-pick');
+
+  pick.style.transition = `transform ${FLIP_HALF_MS}ms ease-in`;
+  pick.style.transform   = 'rotateX(-90deg)';
+  await sleep(FLIP_HALF_MS);
+
+  setTeamRow(row, team);
+
+  pick.style.transition = 'none';
+  pick.style.transform   = 'rotateX(90deg)';
+  void pick.offsetWidth; // force reflow so the next transition takes effect
+  pick.style.transition = `transform ${FLIP_HALF_MS}ms ease-out`;
+  pick.style.transform   = 'rotateX(0deg)';
+  await sleep(FLIP_HALF_MS);
+}
+
 function setTeamRow(row, team) {
-  row.querySelector('.team-rank').textContent = `#${team.rank}`;
-  row.querySelector('.team-flag').textContent = team.flag;
-  row.querySelector('.team-name').textContent = team.name;
+  const pick = row.querySelector('.team-pick');
+  pick.querySelector('.team-rank').textContent = `#${team.rank}`;
+  pick.querySelector('.team-flag').textContent = team.flag;
+  pick.querySelector('.team-name').textContent = team.name;
 }
 
 function buildPlaceholderCards(results) {
@@ -1006,14 +1022,18 @@ function buildPlaceholderCards(results) {
         <div class="result-player">Entrant ${i + 1}</div>
         <div class="result-name" title="${esc(r.name)}">${esc(r.name)}</div>
         <div class="team-row" data-slot="0">
-          <div class="team-rank">#?</div>
-          <div class="team-flag">❔</div>
-          <div class="team-name">Drawing…</div>
+          <div class="team-pick">
+            <div class="team-rank">#?</div>
+            <div class="team-flag">❔</div>
+            <div class="team-name">Drawing…</div>
+          </div>
         </div>
         <div class="team-row" data-slot="1">
-          <div class="team-rank">#?</div>
-          <div class="team-flag">❔</div>
-          <div class="team-name">Drawing…</div>
+          <div class="team-pick">
+            <div class="team-rank">#?</div>
+            <div class="team-flag">❔</div>
+            <div class="team-name">Drawing…</div>
+          </div>
         </div>
       </div>
     </div>
