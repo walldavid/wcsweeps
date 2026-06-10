@@ -508,6 +508,26 @@
       white-space: nowrap;
     }
 
+    /* Shuffle / lock-in animation for each pick */
+    .team-row.shuffling {
+      animation: shuffle-flicker 0.16s steps(2, end) infinite;
+    }
+
+    @keyframes shuffle-flicker {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.5; }
+    }
+
+    .team-row.locked {
+      animation: lock-in 0.32s ease;
+      border-radius: 8px;
+    }
+
+    @keyframes lock-in {
+      0%   { transform: scale(1.04); background: rgba(240, 200, 66, 0.2); }
+      100% { transform: scale(1); background: transparent; }
+    }
+
     /* ── Redraw / export row ── */
     .redraw-row {
       text-align: center;
@@ -891,16 +911,29 @@ function shuffle(arr) {
 }
 
 // =============================================================================
-// Draw
+// Draw — animated reveal
 // =============================================================================
-drawBtn.addEventListener('click', () => {
+const SHUFFLE_STEP_MS = 80;  // how long each shuffled team is shown
+const SHUFFLE_STEPS   = 9;   // how many teams flash by before locking in
+const LOCK_PAUSE_MS   = 280; // pause after a pick locks in
+const ENTRANT_GAP_MS  = 220; // pause before moving to the next entrant
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+drawBtn.addEventListener('click', async () => {
+  if (drawBtn.disabled) return;
+
   const n           = getCount();
   const names       = Array.from(nameGrid.querySelectorAll('input'))
                           .map((inp, i) => inp.value.trim() || `Player ${i + 1}`);
   const activeTeams = TEAMS.slice(0, n * 2);
   const droppedTeams= TEAMS.slice(n * 2);
-  const topHalf     = shuffle(activeTeams.slice(0, n));
-  const bottomHalf  = shuffle(activeTeams.slice(n));
+  const topPool     = activeTeams.slice(0, n);
+  const bottomPool  = activeTeams.slice(n);
+  const topHalf     = shuffle(topPool);
+  const bottomHalf  = shuffle(bottomPool);
 
   const results = names.map((name, i) => ({
     name,
@@ -908,8 +941,84 @@ drawBtn.addEventListener('click', () => {
   }));
 
   lastResults = results;
-  renderResults(results, droppedTeams, n);
+
+  drawBtn.disabled    = true;
+  drawBtn.textContent = '🎲  Drawing…';
+  redrawBtn.style.display = 'none';
+  exportBtn.style.display = 'none';
+  droppedContainer.innerHTML   = '';
+
+  setupSection.style.display   = 'none';
+  resultsSection.style.display = 'block';
+
+  resultsSub.textContent =
+    n === 24
+      ? 'All 48 teams are in play — good luck!'
+      : `${n * 2} of 48 teams in play · ${48 - n * 2} lowest-ranked teams excluded`;
+
+  buildPlaceholderCards(results);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Reveal one entrant at a time: shuffle through the top-half pool to
+  // pick #1, then the bottom-half pool to pick #2, before moving on.
+  for (let i = 0; i < results.length; i++) {
+    const card = resultsGrid.children[i];
+    card.classList.add('visible');
+    await sleep(120);
+    await animateSlot(card, 0, topPool, results[i].teams[0]);
+    await animateSlot(card, 1, bottomPool, results[i].teams[1]);
+    await sleep(ENTRANT_GAP_MS);
+  }
+
+  showDroppedTeams(droppedTeams);
+  redrawBtn.style.display = '';
+  exportBtn.style.display = '';
+
+  drawBtn.disabled    = false;
+  drawBtn.textContent = '🎲  Draw Teams!';
 });
+
+async function animateSlot(card, slotIdx, pool, finalTeam) {
+  const row = card.querySelector(`.team-row[data-slot="${slotIdx}"]`);
+  row.classList.add('shuffling');
+  for (let step = 0; step < SHUFFLE_STEPS; step++) {
+    setTeamRow(row, pool[Math.floor(Math.random() * pool.length)]);
+    await sleep(SHUFFLE_STEP_MS);
+  }
+  setTeamRow(row, finalTeam);
+  row.classList.remove('shuffling');
+  row.classList.add('locked');
+  await sleep(LOCK_PAUSE_MS);
+  row.classList.remove('locked');
+}
+
+function setTeamRow(row, team) {
+  row.querySelector('.team-rank').textContent = `#${team.rank}`;
+  row.querySelector('.team-flag').textContent = team.flag;
+  row.querySelector('.team-name').textContent = team.name;
+}
+
+function buildPlaceholderCards(results) {
+  resultsGrid.innerHTML = results.map((r, i) => `
+    <div class="result-card" data-idx="${i}">
+      <div class="result-card-accent"></div>
+      <div class="result-card-body">
+        <div class="result-player">Entrant ${i + 1}</div>
+        <div class="result-name" title="${esc(r.name)}">${esc(r.name)}</div>
+        <div class="team-row" data-slot="0">
+          <div class="team-rank">#?</div>
+          <div class="team-flag">❔</div>
+          <div class="team-name">Drawing…</div>
+        </div>
+        <div class="team-row" data-slot="1">
+          <div class="team-rank">#?</div>
+          <div class="team-flag">❔</div>
+          <div class="team-name">Drawing…</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
 
 exportBtn.addEventListener('click', () => {
   if (!lastResults) return;
@@ -954,7 +1063,7 @@ redrawBtn.addEventListener('click', () => {
 });
 
 // =============================================================================
-// Render results
+// Helpers
 // =============================================================================
 function esc(str) {
   return str
@@ -964,38 +1073,7 @@ function esc(str) {
     .replace(/"/g, '&quot;');
 }
 
-function renderResults(results, droppedTeams, n) {
-  setupSection.style.display   = 'none';
-  resultsSection.style.display = 'block';
-
-  resultsSub.textContent =
-    n === 24
-      ? 'All 48 teams are in play — good luck!'
-      : `${n * 2} of 48 teams in play · ${48 - n * 2} lowest-ranked teams excluded`;
-
-  resultsGrid.innerHTML = results.map((r, i) => `
-    <div class="result-card" data-idx="${i}">
-      <div class="result-card-accent"></div>
-      <div class="result-card-body">
-        <div class="result-player">Entrant ${i + 1}</div>
-        <div class="result-name" title="${esc(r.name)}">${esc(r.name)}</div>
-        ${r.teams.map(t => `
-          <div class="team-row">
-            <div class="team-rank">#${t.rank}</div>
-            <div class="team-flag">${t.flag}</div>
-            <div class="team-name">${esc(t.name)}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  // Staggered reveal
-  resultsGrid.querySelectorAll('.result-card').forEach((card, i) => {
-    setTimeout(() => card.classList.add('visible'), 60 + i * 70);
-  });
-
-  // Dropped teams
+function showDroppedTeams(droppedTeams) {
   if (droppedTeams.length > 0) {
     droppedContainer.innerHTML = `
       <div class="dropped-wrap">
@@ -1020,8 +1098,6 @@ function renderResults(results, droppedTeams, n) {
   } else {
     droppedContainer.innerHTML = '';
   }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // =============================================================================
